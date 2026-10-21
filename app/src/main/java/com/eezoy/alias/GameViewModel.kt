@@ -17,7 +17,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-enum class Screen { MENU, CATEGORY, SETUP, READY, PLAY, REVIEW, WINNER, RULES }
+enum class Screen { MENU, CATEGORY, SETUP, READY, PLAY, REVIEW, WINNER, RULES, MY_WORDS }
 
 class Team(name: String, score: Int = 0) {
     var name by mutableStateOf(name)

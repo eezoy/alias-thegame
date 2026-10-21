@@ -29,6 +29,7 @@ fun AliasApp(vm: GameViewModel) {
                 Screen.PLAY -> PlayScreen(vm)
                 Screen.REVIEW -> ReviewScreen(vm)
                 Screen.WINNER -> WinnerScreen(vm)
+                Screen.MY_WORDS -> MyWordsScreen(vm)
             }
         }
     }

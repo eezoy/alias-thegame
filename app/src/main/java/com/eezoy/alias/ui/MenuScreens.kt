@@ -66,6 +66,8 @@ fun MenuScreen(vm: GameViewModel) {
         Spacer(Modifier.weight(1f))
         BigButton("Играть") { vm.go(Screen.CATEGORY) }
         Spacer(Modifier.height(12.dp))
+        GhostButton("✍️ Мои слова") { vm.go(Screen.MY_WORDS) }
+        Spacer(Modifier.height(12.dp))
         GhostButton("Правила") { vm.go(Screen.RULES) }
         Spacer(Modifier.height(12.dp))
         GhostButton("Сбросить историю слов") { confirmReset = true }
@@ -107,6 +109,7 @@ fun RulesScreen(vm: GameViewModel) {
             Rule("✏️", "После раунда можно поправить итоги, если кто-то случайно смахнул не туда.")
             Rule("🏆", "Побеждает команда, первой набравшая нужное число очков. Победитель определяется, когда все команды сделали одинаковое число ходов.")
             Rule("🔁", "Игра помнит выпавшие слова и не повторяет их, пока не покажет весь словарь.")
+            Rule("✍️", "В разделе «Мои слова» можно добавить свои слова. Играть ими можно отдельно или подмешать в «Рулетку».")
             Spacer(Modifier.height(16.dp))
         }
     }
@@ -141,7 +144,11 @@ fun CategoryScreen(vm: GameViewModel) {
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Category.entries.forEach { c ->
-                CategoryCard(vm, c) { vm.selectCategory(c) }
+                CategoryCard(vm, c) {
+                    // Пустую категорию «Мои слова» сначала нужно наполнить.
+                    if (c == Category.MINE && vm.repo.customWords().isEmpty()) vm.go(Screen.MY_WORDS)
+                    else vm.selectCategory(c)
+                }
             }
             Spacer(Modifier.height(12.dp))
         }
@@ -175,7 +182,13 @@ private fun CategoryCard(vm: GameViewModel, c: Category, onClick: () -> Unit) {
             Text(c.title, color = TextMain, fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Text(c.subtitle, color = TextMuted, fontSize = 14.sp)
             Spacer(Modifier.height(4.dp))
-            Text("$total слов · новых: $fresh", color = Accent, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+            Text(
+                if (c == Category.MINE && total == 0) "Пока пусто — нажми, чтобы добавить"
+                else "$total слов · новых: $fresh",
+                color = Accent,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.SemiBold,
+            )
         }
     }
 }

@@ -3,7 +3,6 @@ package com.eezoy.alias.ui
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +22,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -39,8 +40,6 @@ import androidx.compose.ui.unit.sp
 import com.eezoy.alias.GameViewModel
 import com.eezoy.alias.Screen
 
-private val TIME_OPTIONS = listOf(30, 45, 60, 90, 120)
-private val TARGET_OPTIONS = listOf(20, 30, 50, 70, 100)
 
 @Composable
 fun SetupScreen(vm: GameViewModel) {
@@ -106,23 +105,21 @@ fun SetupScreen(vm: GameViewModel) {
                 }
             }
 
-            SectionTitle("Время раунда")
-            Row(Modifier.horizontalScroll(rememberScrollState())) {
-                PillRow {
-                    TIME_OPTIONS.forEach { s ->
-                        Pill("$s сек", vm.roundSeconds == s) { vm.roundSeconds = s }
-                    }
-                }
-            }
-
-            SectionTitle("Очков до победы")
-            Row(Modifier.horizontalScroll(rememberScrollState())) {
-                PillRow {
-                    TARGET_OPTIONS.forEach { t ->
-                        Pill("$t", vm.targetScore == t) { vm.targetScore = t }
-                    }
-                }
-            }
+            Spacer(Modifier.height(8.dp))
+            ValueSlider(
+                title = "Время раунда",
+                value = vm.roundSeconds,
+                range = 15..120,
+                step = 5,
+                format = { "$it сек" },
+            ) { vm.roundSeconds = it }
+            ValueSlider(
+                title = "Очков до победы",
+                value = vm.targetScore,
+                range = 20..100,
+                step = 5,
+                format = { "$it" },
+            ) { vm.targetScore = it }
 
             Spacer(Modifier.height(4.dp))
             ToggleRow(
@@ -181,5 +178,53 @@ fun ToggleRow(title: String, subtitle: String, checked: Boolean, onChange: (Bool
                 uncheckedBorderColor = SurfaceHi,
             ),
         )
+    }
+}
+
+/** Ползунок с подписью и текущим значением, шаг задаётся явно. */
+@Composable
+private fun ValueSlider(
+    title: String,
+    value: Int,
+    range: IntRange,
+    step: Int,
+    format: (Int) -> String,
+    onChange: (Int) -> Unit,
+) {
+    val snapped = (((value.coerceIn(range.first, range.last) - range.first + step / 2) / step) * step + range.first)
+        .coerceIn(range.first, range.last)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(18.dp))
+            .background(SurfaceC)
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(title, color = TextMain, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
+            Text(format(snapped), color = Accent, fontSize = 20.sp, fontWeight = FontWeight.Black)
+        }
+        Slider(
+            value = snapped.toFloat(),
+            onValueChange = { v ->
+                val n = (((v - range.first) / step).let { kotlin.math.round(it) }.toInt() * step + range.first)
+                    .coerceIn(range.first, range.last)
+                if (n != snapped) onChange(n)
+            },
+            valueRange = range.first.toFloat()..range.last.toFloat(),
+            steps = (range.last - range.first) / step - 1,
+            modifier = Modifier.fillMaxWidth(),
+            colors = SliderDefaults.colors(
+                thumbColor = Color.White,
+                activeTrackColor = Accent2,
+                inactiveTrackColor = SurfaceHi,
+                activeTickColor = Color.Transparent,
+                inactiveTickColor = Color.Transparent,
+            ),
+        )
+        Row {
+            Text(format(range.first), color = TextMuted, fontSize = 12.sp, modifier = Modifier.weight(1f))
+            Text(format(range.last), color = TextMuted, fontSize = 12.sp)
+        }
     }
 }

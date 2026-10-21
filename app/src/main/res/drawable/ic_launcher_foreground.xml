@@ -1,22 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
     android:width="108dp" android:height="108dp"
     android:viewportWidth="108" android:viewportHeight="108">
-    <!-- след от свайпа -->
-    <group android:rotation="10" android:pivotX="54" android:pivotY="54">
-        <path android:fillColor="#FFFFFF" android:fillAlpha="0.35"
-            android:pathData="M39,74 h22 a2,2 0 0 1 0,4 h-22 a2,2 0 0 1 0,-4 z" />
-        <path android:fillColor="#FFFFFF" android:fillAlpha="0.2"
-            android:pathData="M42.7,81 h13.6 a1.7,1.7 0 0 1 0,3.4 h-13.6 a1.7,1.7 0 0 1 0,-3.4 z" />
+    <!-- веер карт: жёлтая и полупрозрачная сзади -->
+    <group android:rotation="-18" android:pivotX="54" android:pivotY="76">
+        <path android:fillColor="#FFD25E" android:pathData="M45,36 h18 a6,6 0 0 1 6,6 v28 a6,6 0 0 1 -6,6 h-18 a6,6 0 0 1 -6,-6 v-28 a6,6 0 0 1 6,-6 z" />
     </group>
-    <!-- облачко-реплика, улетающее вверх -->
-    <group android:rotation="10" android:pivotX="54" android:pivotY="50">
-        <path android:fillColor="#FFFFFF" android:pathData="M42,32 h24 a8,8 0 0 1 8,8 v18 a8,8 0 0 1 -8,8 h-12 l-8,7 v-7 h-4 a8,8 0 0 1 -8,-8 v-18 a8,8 0 0 1 8,-8 z" />
-        <path android:fillColor="#6A4CFF" android:pathData="M42.1,49 a3.4,3.4 0 1 0 6.8,0 a3.4,3.4 0 1 0 -6.8,0 z" />
-        <path android:fillColor="#B04FD8" android:pathData="M50.6,49 a3.4,3.4 0 1 0 6.8,0 a3.4,3.4 0 1 0 -6.8,0 z" />
-        <path android:fillColor="#FF5C8A" android:pathData="M59.1,49 a3.4,3.4 0 1 0 6.8,0 a3.4,3.4 0 1 0 -6.8,0 z" />
+    <group android:rotation="16" android:pivotX="54" android:pivotY="76">
+        <path android:fillColor="#FFFFFF" android:fillAlpha="0.45" android:pathData="M45,36 h18 a6,6 0 0 1 6,6 v28 a6,6 0 0 1 -6,6 h-18 a6,6 0 0 1 -6,-6 v-28 a6,6 0 0 1 6,-6 z" />
     </group>
+    <!-- передняя карта с буквой А -->
+    <path android:fillColor="#FFFFFF" android:pathData="M45,34 h18 a6,6 0 0 1 6,6 v28 a6,6 0 0 1 -6,6 h-18 a6,6 0 0 1 -6,-6 v-28 a6,6 0 0 1 6,-6 z" />
+    <path android:fillType="evenOdd" android:pathData="M51.983,43 h4.033 L63.46,65 h-5.683 l-1.467,-4.217 h-7.883 l-1.467,4.217 h-5.683 z M54,48.958 l-2.658,8.433 h5.317 z">
+        <aapt:attr name="android:fillColor">
+            <gradient android:type="linear"
+                android:startX="44" android:startY="43"
+                android:endX="64" android:endY="65">
+                <item android:offset="0" android:color="#FF6A4CFF" />
+                <item android:offset="1" android:color="#FFFF5C8A" />
+            </gradient>
+        </aapt:attr>
+    </path>
     <!-- искорка -->
-    <path android:fillColor="#FFD25E" android:pathData="M74,27 l1.7,4.1 4.1,1.7 -4.1,1.7 -1.7,4.1 -1.7,-4.1 -4.1,-1.7 4.1,-1.7 z" />
-    <path android:fillColor="#FFFFFF" android:fillAlpha="0.7" android:pathData="M29.2,38 a1.8,1.8 0 1 0 3.6,0 a1.8,1.8 0 1 0 -3.6,0 z" />
+    <path android:fillColor="#FFD25E" android:pathData="M76,26 l1.53,3.69 3.69,1.53 -3.69,1.53 -1.53,3.69 -1.53,-3.69 -3.69,-1.53 3.69,-1.53 z" />
 </vector>

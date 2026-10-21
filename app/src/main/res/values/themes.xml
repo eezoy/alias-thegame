@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="bg">#FF14121F</color>
-    <color name="icon_bg">#FF7C5CFF</color>
 
     <style name="Theme.Alias" parent="android:Theme.Material.NoActionBar">
         <item name="android:windowBackground">@color/bg</item>

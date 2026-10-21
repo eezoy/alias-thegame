@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="108dp"
-    android:height="108dp"
-    android:viewportWidth="108"
-    android:viewportHeight="108">
-    <!-- задняя карточка -->
-    <path
-        android:fillColor="#FFFF5C8A"
-        android:pathData="M44,30 h26 a4,4 0 0 1 4,4 v40 a4,4 0 0 1 -4,4 h-26 a4,4 0 0 1 -4,-4 v-40 a4,4 0 0 1 4,-4 z" />
-    <!-- передняя карточка -->
-    <path
-        android:fillColor="#FFFFFFFF"
-        android:pathData="M38,26 h26 a4,4 0 0 1 4,4 v44 a4,4 0 0 1 -4,4 h-26 a4,4 0 0 1 -4,-4 v-44 a4,4 0 0 1 4,-4 z" />
-    <!-- стрелка вверх -->
-    <path
-        android:fillColor="#FF7C5CFF"
-        android:pathData="M51,36 l11,13 h-7 v15 h-8 v-15 h-7 z" />
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <!-- след от свайпа -->
+    <group android:rotation="10" android:pivotX="54" android:pivotY="54">
+        <path android:fillColor="#FFFFFF" android:fillAlpha="0.35"
+            android:pathData="M39,74 h22 a2,2 0 0 1 0,4 h-22 a2,2 0 0 1 0,-4 z" />
+        <path android:fillColor="#FFFFFF" android:fillAlpha="0.2"
+            android:pathData="M42.7,81 h13.6 a1.7,1.7 0 0 1 0,3.4 h-13.6 a1.7,1.7 0 0 1 0,-3.4 z" />
+    </group>
+    <!-- облачко-реплика, улетающее вверх -->
+    <group android:rotation="10" android:pivotX="54" android:pivotY="50">
+        <path android:fillColor="#FFFFFF" android:pathData="M42,32 h24 a8,8 0 0 1 8,8 v18 a8,8 0 0 1 -8,8 h-12 l-8,7 v-7 h-4 a8,8 0 0 1 -8,-8 v-18 a8,8 0 0 1 8,-8 z" />
+        <path android:fillColor="#6A4CFF" android:pathData="M42.1,49 a3.4,3.4 0 1 0 6.8,0 a3.4,3.4 0 1 0 -6.8,0 z" />
+        <path android:fillColor="#B04FD8" android:pathData="M50.6,49 a3.4,3.4 0 1 0 6.8,0 a3.4,3.4 0 1 0 -6.8,0 z" />
+        <path android:fillColor="#FF5C8A" android:pathData="M59.1,49 a3.4,3.4 0 1 0 6.8,0 a3.4,3.4 0 1 0 -6.8,0 z" />
+    </group>
+    <!-- искорка -->
+    <path android:fillColor="#FFD25E" android:pathData="M74,27 l1.7,4.1 4.1,1.7 -4.1,1.7 -1.7,4.1 -1.7,-4.1 -4.1,-1.7 4.1,-1.7 z" />
+    <path android:fillColor="#FFFFFF" android:fillAlpha="0.7" android:pathData="M29.2,38 a1.8,1.8 0 1 0 3.6,0 a1.8,1.8 0 1 0 -3.6,0 z" />
 </vector>

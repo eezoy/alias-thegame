@@ -132,7 +132,7 @@ fun SetupScreen(vm: GameViewModel) {
             ) { vm.skipPenalty = it }
             ToggleRow(
                 title = "Последнее общее слово",
-                subtitle = "Когда время выйдет, слово может отгадать любая команда",
+                subtitle = "Последнее слово, которое доигрывают после конца времени, может отгадать любая команда",
                 checked = vm.lastWordEnabled,
             ) { vm.lastWordEnabled = it }
             Spacer(Modifier.height(12.dp))

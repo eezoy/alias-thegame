@@ -61,7 +61,9 @@ fun PlayScreen(vm: GameViewModel) {
         view.keepScreenOn = true
         onDispose { view.keepScreenOn = false }
     }
-    BackHandler { if (!vm.paused) vm.togglePause() }
+    BackHandler {
+        if (vm.waitingStart) vm.cancelStart() else if (!vm.paused) vm.togglePause()
+    }
 
     val scope = rememberCoroutineScope()
     val haptic = LocalHapticFeedback.current
@@ -106,16 +108,18 @@ fun PlayScreen(vm: GameViewModel) {
                 fontSize = 44.sp,
                 fontWeight = FontWeight.Black,
             )
-            Spacer(Modifier.width(14.dp))
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
-                    .background(SurfaceHi)
-                    .clickable { vm.togglePause() },
-                contentAlignment = Alignment.Center,
-            ) {
-                Text("❚❚", color = TextMain, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            if (!vm.waitingStart) {
+                Spacer(Modifier.width(14.dp))
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(SurfaceHi)
+                        .clickable { vm.togglePause() },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text("❚❚", color = TextMain, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                }
             }
         }
 
@@ -130,13 +134,22 @@ fun PlayScreen(vm: GameViewModel) {
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    "⏰ Время вышло! Последнее слово — отгадать может любая команда",
+                    if (vm.lastWordEnabled) "⏰ Время вышло! Последнее слово — отгадать может любая команда"
+                    else "⏰ Время вышло! Доиграйте последнее слово",
                     color = Gold,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
                     textAlign = TextAlign.Center,
                 )
             }
+        } else if (vm.waitingStart) {
+            Text(
+                "Слово появится после старта",
+                color = TextMuted,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+            )
         } else {
             Text(
                 "↑ угадано",
@@ -152,7 +165,37 @@ fun PlayScreen(vm: GameViewModel) {
             modifier = Modifier.weight(1f).fillMaxWidth().padding(vertical = 14.dp),
             contentAlignment = Alignment.Center,
         ) {
-            if (word != null) {
+            if (vm.waitingStart) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(320.dp)
+                        .clip(RoundedCornerShape(32.dp))
+                        .background(SurfaceC)
+                        .clickable { vm.begin() }
+                        .padding(24.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("🤫", fontSize = 56.sp)
+                        Spacer(Modifier.height(12.dp))
+                        Text(
+                            "Объясняет ${vm.currentTeam?.name ?: ""}",
+                            color = TextMain,
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            textAlign = TextAlign.Center,
+                        )
+                        Spacer(Modifier.height(6.dp))
+                        Text(
+                            "Возьми телефон так, чтобы экран видел только ты, и жми «Старт»",
+                            color = TextMuted,
+                            fontSize = 15.sp,
+                            textAlign = TextAlign.Center,
+                        )
+                    }
+                }
+            } else if (word != null) {
                 val appear = remember(word) { Animatable(0.85f) }
                 LaunchedEffect(word) {
                     appear.animateTo(1f, spring(dampingRatio = Spring.DampingRatioMediumBouncy))
@@ -213,7 +256,7 @@ fun PlayScreen(vm: GameViewModel) {
             }
         }
 
-        if (!vm.lastWordPhase) {
+        if (!vm.lastWordPhase && !vm.waitingStart) {
             Text(
                 "↓ пропустить",
                 color = Bad.copy(alpha = 0.7f),
@@ -225,7 +268,9 @@ fun PlayScreen(vm: GameViewModel) {
         Spacer(Modifier.height(10.dp))
 
         // Запасные кнопки, если неудобно смахивать.
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        if (vm.waitingStart) {
+            BigButton("Старт", color = Good) { vm.begin() }
+        } else Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             BigButton(if (vm.lastWordPhase) "Не отгадали" else "Пропуск", Modifier.weight(1f), color = SurfaceHi) { fling(false) }
             BigButton(if (vm.lastWordPhase) "Отгадали" else "Угадано", Modifier.weight(1f), color = Good) { fling(true) }
         }

@@ -70,6 +70,10 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
         private set
     var lastWordPhase by mutableStateOf(false)
         private set
+
+    /** Раунд открыт, но таймер ещё не запущен: ждём кнопку «Старт». */
+    var waitingStart by mutableStateOf(false)
+        private set
     val results = mutableStateListOf<WordResult>()
 
     private var deck: WordDeck? = null
@@ -138,9 +142,27 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
         lastWordPhase = false
         paused = false
         remainingMs = roundSeconds * 1000L
-        currentWord = d.next()
+        currentWord = null
+        waitingStart = true
         screen = Screen.PLAY
+    }
+
+    /** Кнопка «Старт»: показываем первое слово и запускаем таймер. */
+    fun begin() {
+        if (!waitingStart) return
+        val d = deck ?: WordDeck(repo, category).also { deck = it }
+        waitingStart = false
+        paused = false
+        currentWord = d.next()
+        beep(ToneGenerator.TONE_PROP_ACK, 150)
         startTimer()
+    }
+
+    /** Назад со стартового экрана раунда — обратно к экрану хода. */
+    fun cancelStart() {
+        if (!waitingStart) return
+        waitingStart = false
+        screen = Screen.READY
     }
 
     private fun startTimer() {
@@ -167,7 +189,9 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
 
     private fun onTimeUp() {
         beep(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 600)
-        if (lastWordEnabled && currentWord != null) {
+        // Последнее слово доигрывается без ограничения времени,
+        // пока его не угадают или не пропустят.
+        if (currentWord != null) {
             lastWordPhase = true
         } else {
             currentWord = null
@@ -180,6 +204,7 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun togglePause() {
+        if (waitingStart) return
         paused = !paused
     }
 
@@ -189,6 +214,7 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
         val word = currentWord ?: return
         if (lastWordPhase) {
             results.add(WordResult(word, guessed, isLast = true, lastTeam = if (guessed) currentTeamIndex else -1))
+            lastWordPhase = false
             currentWord = null
             screen = Screen.REVIEW
         } else {
@@ -248,6 +274,8 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
         timerJob?.cancel()
         paused = false
         currentWord = null
+        waitingStart = false
+        lastWordPhase = false
         screen = Screen.MENU
     }
 

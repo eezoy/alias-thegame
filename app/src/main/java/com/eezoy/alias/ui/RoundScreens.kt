@@ -193,7 +193,7 @@ fun ReviewScreen(vm: GameViewModel) {
                             }
                         }
                     }
-                    if (r.isLast && r.guessed && vm.teams.size > 1) {
+                    if (r.isLast && r.guessed && vm.lastWordEnabled && vm.teams.size > 1) {
                         Spacer(Modifier.height(10.dp))
                         Text("Кто отгадал?", color = TextMuted, fontSize = 13.sp)
                         Spacer(Modifier.height(6.dp))

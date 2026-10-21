@@ -14,6 +14,7 @@ enum class Category(
     HARD("Сложные", "Для тех, кто знает всё", "🧠", listOf("hard")),
     ROULETTE("Рулетка", "Лёгкие, средние и сложные вперемешку", "🎲", listOf("easy", "medium", "hard")),
     PHRASES("Словосочетания", "Объясни целое выражение", "💬", listOf("phrases")),
+    DARK("Чёрный юмор", "Смерть, ад, хорроры и офисная безнадёга", "🖤", listOf("dark")),
 }
 
 /**
@@ -58,7 +59,7 @@ class WordRepository(private val context: Context) {
         words(file).count { it !in used }
     }
 
-    fun totalUnique(): Int = listOf("easy", "medium", "hard", "phrases").sumOf { words(it).size }
+    fun totalUnique(): Int = listOf("easy", "medium", "hard", "phrases", "dark").sumOf { words(it).size }
 }
 
 /** Колода на одну игру: перемешанные слова, которые ещё не выпадали. */

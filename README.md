@@ -6,7 +6,6 @@
 <br>
 
 [![Последняя версия](https://img.shields.io/github/v/release/eezoy/alias-thegame?style=for-the-badge&label=версия&color=7C5CFF&labelColor=1F1B2E)](https://github.com/eezoy/alias-thegame/releases/latest)
-[![Скачивания](https://img.shields.io/github/downloads/eezoy/alias-thegame/total?style=for-the-badge&label=скачивания&color=FF5C8A&labelColor=1F1B2E)](https://github.com/eezoy/alias-thegame/releases)
 [![Сборка](https://img.shields.io/github/actions/workflow/status/eezoy/alias-thegame/build.yml?branch=main&style=for-the-badge&label=сборка&labelColor=1F1B2E)](https://github.com/eezoy/alias-thegame/actions)
 <br>
 ![Android 8.0+](https://img.shields.io/badge/Android-8.0%2B-35D07F?style=for-the-badge&logo=android&logoColor=white&labelColor=1F1B2E)
@@ -76,7 +75,7 @@
       От 2 до 6 команд, раунд от 15 до 120 секунд, игра до 20–100 очков, штраф за пропуск.
     </td>
     <td valign="top">
-      <h4>⏸ Пауза и звук</h4>
+      <h4>🔔 Пауза и звук</h4>
       Пауза скрывает слово. Последние пять секунд тикают, конец раунда слышно, а экран не гаснет.
     </td>
   </tr>

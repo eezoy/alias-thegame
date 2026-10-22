@@ -283,13 +283,17 @@ fun PlayScreen(vm: GameViewModel) {
         )
     }
     if (confirmExit) {
-        ConfirmDialog(
-            title = "Завершить игру?",
+        ExitGameDialog(
+            title = "Выйти в меню?",
             text = "Счёт сохранится: игру можно будет продолжить из главного меню. Текущий раунд не засчитается.",
-            confirm = "Завершить",
-            onConfirm = {
+            exitLabel = "Выйти",
+            onExit = {
                 confirmExit = false
                 vm.endGame()
+            },
+            onReset = {
+                confirmExit = false
+                vm.abandonGame()
             },
             onDismiss = { confirmExit = false },
         )
@@ -322,7 +326,7 @@ private fun PauseOverlay(onResume: () -> Unit, onExit: () -> Unit) {
             Spacer(Modifier.height(32.dp))
             BigButton("Продолжить", onClick = onResume)
             Spacer(Modifier.height(12.dp))
-            GhostButton("Завершить игру", onClick = onExit)
+            GhostButton("Выйти в меню", onClick = onExit)
         }
     }
 }

@@ -24,6 +24,10 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
@@ -218,4 +222,50 @@ fun ConfirmDialog(
             TextButton(onClick = onDismiss) { Text("Отмена", color = TextMuted) }
         },
     )
+}
+
+/**
+ * Диалог выхода из идущей игры: выйти с сохранением счёта или сбросить игру.
+ * Сброс подтверждается вторым шагом, чтобы счёт не стёрся случайно.
+ */
+@Composable
+fun ExitGameDialog(
+    title: String,
+    text: String,
+    exitLabel: String,
+    onExit: () -> Unit,
+    onReset: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    var resetStep by remember { mutableStateOf(false) }
+    if (!resetStep) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            containerColor = SurfaceC,
+            title = { Text(title, color = TextMain, fontWeight = FontWeight.Bold) },
+            text = { Text(text, color = TextMuted) },
+            confirmButton = {
+                TextButton(onClick = onExit) { Text(exitLabel, color = Accent, fontWeight = FontWeight.Bold) }
+            },
+            dismissButton = {
+                Row {
+                    TextButton(onClick = { resetStep = true }) { Text("Сбросить", color = Bad, fontWeight = FontWeight.SemiBold) }
+                    TextButton(onClick = onDismiss) { Text("Отмена", color = TextMuted) }
+                }
+            },
+        )
+    } else {
+        AlertDialog(
+            onDismissRequest = { resetStep = false },
+            containerColor = SurfaceC,
+            title = { Text("Сбросить игру?", color = TextMain, fontWeight = FontWeight.Bold) },
+            text = { Text("Счёт этой игры удалится, продолжить её будет нельзя.", color = TextMuted) },
+            confirmButton = {
+                TextButton(onClick = onReset) { Text("Сбросить", color = Bad, fontWeight = FontWeight.Bold) }
+            },
+            dismissButton = {
+                TextButton(onClick = { resetStep = false }) { Text("Назад", color = TextMuted) }
+            },
+        )
+    }
 }

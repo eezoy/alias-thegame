@@ -350,6 +350,12 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
         screen = Screen.READY
     }
 
+    /** Выйти в меню и удалить незаконченную игру. */
+    fun abandonGame() {
+        endGame()
+        clearSave()
+    }
+
     fun endGame() {
         timerJob?.cancel()
         paused = false

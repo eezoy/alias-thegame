@@ -22,7 +22,12 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,38 +36,92 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-val Bg = Color(0xFF14121F)
-val SurfaceC = Color(0xFF1F1B2E)
-val SurfaceHi = Color(0xFF2A2540)
-val Accent = Color(0xFFFF5C8A)
-val Accent2 = Color(0xFF7C5CFF)
-val Good = Color(0xFF35D07F)
-val Bad = Color(0xFFFF5A5A)
-val Gold = Color(0xFFFFC94D)
-val TextMain = Color(0xFFF4F1FF)
-val TextMuted = Color(0xFFA59FC2)
+/** Палитра приложения: у тёмной и светлой темы свои значения. */
+@Immutable
+data class Palette(
+    val dark: Boolean,
+    val bg: Color,
+    val surface: Color,
+    val surfaceHi: Color,
+    val text: Color,
+    val muted: Color,
+    val accent: Color,
+    val accent2: Color,
+    val good: Color,
+    val bad: Color,
+    val gold: Color,
+    val thumb: Color,
+)
+
+val DarkPalette = Palette(
+    dark = true,
+    bg = Color(0xFF14121F),
+    surface = Color(0xFF1F1B2E),
+    surfaceHi = Color(0xFF2A2540),
+    text = Color(0xFFF4F1FF),
+    muted = Color(0xFFA59FC2),
+    accent = Color(0xFFFF5C8A),
+    accent2 = Color(0xFF7C5CFF),
+    good = Color(0xFF35D07F),
+    bad = Color(0xFFFF5A5A),
+    gold = Color(0xFFFFC94D),
+    thumb = Color.White,
+)
+
+val LightPalette = Palette(
+    dark = false,
+    bg = Color(0xFFF5F2FC),
+    surface = Color(0xFFFFFFFF),
+    surfaceHi = Color(0xFFEAE5F8),
+    text = Color(0xFF1D1830),
+    muted = Color(0xFF6F6889),
+    accent = Color(0xFFF2457A),
+    accent2 = Color(0xFF6A4CFF),
+    good = Color(0xFF1FB36A),
+    bad = Color(0xFFE5484D),
+    gold = Color(0xFFC98A00),
+    thumb = Color(0xFF6A4CFF),
+)
+
+val LocalPalette = staticCompositionLocalOf { DarkPalette }
+
+val Bg: Color @Composable @ReadOnlyComposable get() = LocalPalette.current.bg
+val SurfaceC: Color @Composable @ReadOnlyComposable get() = LocalPalette.current.surface
+val SurfaceHi: Color @Composable @ReadOnlyComposable get() = LocalPalette.current.surfaceHi
+val Accent: Color @Composable @ReadOnlyComposable get() = LocalPalette.current.accent
+val Accent2: Color @Composable @ReadOnlyComposable get() = LocalPalette.current.accent2
+val Good: Color @Composable @ReadOnlyComposable get() = LocalPalette.current.good
+val Bad: Color @Composable @ReadOnlyComposable get() = LocalPalette.current.bad
+val Gold: Color @Composable @ReadOnlyComposable get() = LocalPalette.current.gold
+val TextMain: Color @Composable @ReadOnlyComposable get() = LocalPalette.current.text
+val TextMuted: Color @Composable @ReadOnlyComposable get() = LocalPalette.current.muted
+val ThumbC: Color @Composable @ReadOnlyComposable get() = LocalPalette.current.thumb
 
 @Composable
-fun AliasTheme(content: @Composable () -> Unit) {
-    MaterialTheme(
-        colorScheme = darkColorScheme(
-            primary = Accent,
-            secondary = Accent2,
-            background = Bg,
-            surface = SurfaceC,
-            onPrimary = Color.White,
-            onBackground = TextMain,
-            onSurface = TextMain,
-        ),
-        content = content,
-    )
+fun AliasTheme(dark: Boolean = true, content: @Composable () -> Unit) {
+    val p = if (dark) DarkPalette else LightPalette
+    val scheme = if (dark) {
+        darkColorScheme(
+            primary = p.accent, secondary = p.accent2, background = p.bg, surface = p.surface,
+            onPrimary = Color.White, onBackground = p.text, onSurface = p.text,
+        )
+    } else {
+        lightColorScheme(
+            primary = p.accent, secondary = p.accent2, background = p.bg, surface = p.surface,
+            onPrimary = Color.White, onBackground = p.text, onSurface = p.text,
+        )
+    }
+    CompositionLocalProvider(LocalPalette provides p) {
+        MaterialTheme(colorScheme = scheme, content = content)
+    }
 }
 
 @Composable
 fun BigButton(
     text: String,
     modifier: Modifier = Modifier,
-    color: Color = Accent,
+    color: Color = Color.Unspecified,
+    textColor: Color = Color.White,
     enabled: Boolean = true,
     onClick: () -> Unit,
 ) {
@@ -71,7 +130,7 @@ fun BigButton(
         enabled = enabled,
         modifier = modifier.fillMaxWidth().height(58.dp),
         shape = RoundedCornerShape(18.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = color, contentColor = Color.White),
+        colors = ButtonDefaults.buttonColors(containerColor = if (color == Color.Unspecified) Accent else color, contentColor = textColor),
     ) {
         Text(text, fontSize = 18.sp, fontWeight = FontWeight.Bold)
     }

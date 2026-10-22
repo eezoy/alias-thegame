@@ -8,7 +8,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eezoy.alias.ui.AliasApp
-import com.eezoy.alias.ui.AliasTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,10 +17,8 @@ class MainActivity : ComponentActivity() {
         )
         super.onCreate(savedInstanceState)
         setContent {
-            AliasTheme {
-                val vm: GameViewModel = viewModel()
-                AliasApp(vm)
-            }
+            val vm: GameViewModel = viewModel()
+            AliasApp(vm)
         }
     }
 }

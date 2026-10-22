@@ -271,7 +271,7 @@ fun PlayScreen(vm: GameViewModel) {
         if (vm.waitingStart) {
             BigButton("Старт", color = Good) { vm.begin() }
         } else Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            BigButton(if (vm.lastWordPhase) "Не отгадали" else "Пропуск", Modifier.weight(1f), color = SurfaceHi) { fling(false) }
+            BigButton(if (vm.lastWordPhase) "Не отгадали" else "Пропуск", Modifier.weight(1f), color = SurfaceHi, textColor = TextMain) { fling(false) }
             BigButton(if (vm.lastWordPhase) "Отгадали" else "Угадано", Modifier.weight(1f), color = Good) { fling(true) }
         }
     }
@@ -285,7 +285,7 @@ fun PlayScreen(vm: GameViewModel) {
     if (confirmExit) {
         ConfirmDialog(
             title = "Завершить игру?",
-            text = "Счёт этой игры не сохранится.",
+            text = "Счёт сохранится: игру можно будет продолжить из главного меню. Текущий раунд не засчитается.",
             confirm = "Завершить",
             onConfirm = {
                 confirmExit = false

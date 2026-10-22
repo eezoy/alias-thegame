@@ -51,7 +51,7 @@ fun MyWordsScreen(vm: GameViewModel) {
     val repo = vm.repo
     val words = remember { mutableStateListOf<String>().apply { addAll(repo.customWords().reversed()) } }
     var input by remember { mutableStateOf("") }
-    var message by remember { mutableStateOf<Pair<String, Color>?>(null) }
+    var message by remember { mutableStateOf<Pair<String, Boolean>?>(null) }
     var mix by remember { mutableStateOf(repo.mixCustomIntoRoulette) }
     var confirmClear by remember { mutableStateOf(false) }
 
@@ -114,9 +114,9 @@ fun MyWordsScreen(vm: GameViewModel) {
                     )
                     Spacer(Modifier.height(10.dp))
                     BigButton("Добавить", color = Accent2, enabled = input.isNotBlank()) { submit() }
-                    message?.let { (text, color) ->
+                    message?.let { (text, ok) ->
                         Spacer(Modifier.height(10.dp))
-                        Text(text, color = color, fontSize = 14.sp, lineHeight = 19.sp)
+                        Text(text, color = if (ok) Good else Gold, fontSize = 14.sp, lineHeight = 19.sp)
                     }
                 }
             }
@@ -206,12 +206,12 @@ fun MyWordsScreen(vm: GameViewModel) {
     }
 }
 
-private fun describe(r: AddResult): Pair<String, Color> {
+private fun describe(r: AddResult): Pair<String, Boolean> {
     val lines = mutableListOf<String>()
     if (r.added.isNotEmpty()) lines.add("✓ Добавлено: ${r.added.size}")
     if (r.alreadyMine.isNotEmpty()) lines.add("Уже есть в твоих словах: ${r.alreadyMine.joinToString(", ")}")
     r.inDictionary.forEach { (w, cat) -> lines.add("«$w» уже есть в категории «$cat»") }
     if (lines.isEmpty()) lines.add("Нечего добавлять")
-    val color = if (r.added.isNotEmpty() && r.alreadyMine.isEmpty() && r.inDictionary.isEmpty()) Good else Gold
-    return lines.joinToString("\n") to color
+    val ok = r.added.isNotEmpty() && r.alreadyMine.isEmpty() && r.inDictionary.isEmpty()
+    return lines.joinToString("\n") to ok
 }

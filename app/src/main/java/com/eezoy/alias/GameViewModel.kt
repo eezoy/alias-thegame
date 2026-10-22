@@ -38,9 +38,32 @@ private val FUNNY_TEAM_NAMES = listOf(
     "Альтушки", "Чебуреки", "Пингвины", "Мемологи",
 )
 
+/** Краткие сведения о незаконченной игре для главного меню. */
+data class SavedGameInfo(
+    val category: Category,
+    val teams: List<Pair<String, Int>>,
+    val round: Int,
+    val nextTeam: String,
+    val target: Int,
+)
+
 class GameViewModel(app: Application) : AndroidViewModel(app) {
     val repo = WordRepository(app)
     private val prefs = app.getSharedPreferences("settings", Context.MODE_PRIVATE)
+    private val savePrefs = app.getSharedPreferences("saved_game", Context.MODE_PRIVATE)
+
+    // ---- Тема ----
+    var darkTheme by mutableStateOf(prefs.getBoolean("darkTheme", true))
+        private set
+
+    fun toggleTheme() {
+        darkTheme = !darkTheme
+        prefs.edit().putBoolean("darkTheme", darkTheme).apply()
+    }
+
+    /** Незаконченная игра, если есть. */
+    var savedGame by mutableStateOf<SavedGameInfo?>(null)
+        private set
 
     var screen by mutableStateOf(Screen.MENU)
         private set
@@ -87,6 +110,59 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
             ?.filter { it.isNotEmpty() }
         val names = if (saved != null && saved.size >= 2) saved else FUNNY_TEAM_NAMES.shuffled().take(2)
         names.forEach { teams.add(Team(it)) }
+        savedGame = readSave()
+    }
+
+    // ---- Сохранение незаконченной игры ----
+    private fun writeSave() {
+        savePrefs.edit()
+            .putBoolean("active", true)
+            .putString("category", category.name)
+            .putInt("roundSeconds", roundSeconds)
+            .putInt("targetScore", targetScore)
+            .putBoolean("skipPenalty", skipPenalty)
+            .putBoolean("lastWord", lastWordEnabled)
+            .putInt("turnIndex", turnIndex)
+            .putString("teams", teams.joinToString("\n") { "${it.score}\t${it.name.replace("\n", " ").replace("\t", " ")}" })
+            .apply()
+        savedGame = readSave()
+    }
+
+    private fun clearSave() {
+        savePrefs.edit().clear().apply()
+        savedGame = null
+    }
+
+    private fun readTeams(): List<Pair<String, Int>> =
+        (savePrefs.getString("teams", "") ?: "").split("\n").mapNotNull { line ->
+            val tab = line.indexOf('\t')
+            if (tab <= 0) null else (line.substring(tab + 1) to (line.substring(0, tab).toIntOrNull() ?: 0))
+        }
+
+    private fun readSave(): SavedGameInfo? {
+        if (!savePrefs.getBoolean("active", false)) return null
+        val t = readTeams()
+        if (t.size < 2) return null
+        val cat = runCatching { Category.valueOf(savePrefs.getString("category", "") ?: "") }.getOrNull() ?: return null
+        val turn = savePrefs.getInt("turnIndex", 0)
+        return SavedGameInfo(cat, t, turn / t.size + 1, t[turn % t.size].first, savePrefs.getInt("targetScore", 50))
+    }
+
+    /** Продолжить незаконченную игру с того хода, на котором она остановилась. */
+    fun continueGame() {
+        val t = readTeams()
+        if (savedGame == null || t.size < 2) return
+        category = savedGame!!.category
+        roundSeconds = savePrefs.getInt("roundSeconds", roundSeconds)
+        targetScore = savePrefs.getInt("targetScore", targetScore)
+        skipPenalty = savePrefs.getBoolean("skipPenalty", skipPenalty)
+        lastWordEnabled = savePrefs.getBoolean("lastWord", lastWordEnabled)
+        teams.clear()
+        t.forEach { (name, score) -> teams.add(Team(name, score)) }
+        turnIndex = savePrefs.getInt("turnIndex", 0)
+        deck = WordDeck(repo, category)
+        results.clear()
+        screen = Screen.READY
     }
 
     // ---- Навигация ----
@@ -126,6 +202,7 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
             .apply()
         turnIndex = 0
         deck = WordDeck(repo, category)
+        writeSave()
         screen = Screen.READY
     }
 
@@ -133,6 +210,7 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
         teams.forEach { it.score = 0 }
         turnIndex = 0
         deck = WordDeck(repo, category)
+        writeSave()
         screen = Screen.READY
     }
 
@@ -263,10 +341,12 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
         if (turnIndex % teams.size == 0) {
             val max = teams.maxOf { it.score }
             if (max >= targetScore && teams.count { it.score == max } == 1) {
+                clearSave()
                 screen = Screen.WINNER
                 return
             }
         }
+        writeSave()
         screen = Screen.READY
     }
 

@@ -215,7 +215,7 @@ private fun ValueSlider(
             steps = (range.last - range.first) / step - 1,
             modifier = Modifier.fillMaxWidth(),
             colors = SliderDefaults.colors(
-                thumbColor = Color.White,
+                thumbColor = ThumbC,
                 activeTrackColor = Accent2,
                 inactiveTrackColor = SurfaceHi,
                 activeTickColor = Color.Transparent,

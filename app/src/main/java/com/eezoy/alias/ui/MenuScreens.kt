@@ -36,43 +36,58 @@ import androidx.compose.ui.unit.sp
 import com.eezoy.alias.Category
 import com.eezoy.alias.GameViewModel
 import com.eezoy.alias.Screen
+import com.eezoy.alias.SavedGameInfo
 
 @Composable
 fun MenuScreen(vm: GameViewModel) {
     var confirmReset by remember { mutableStateOf(false) }
     var refresh by remember { mutableIntStateOf(0) }
     val total = remember(refresh) { vm.repo.totalUnique() }
+    val saved = vm.savedGame
 
-    Column(
-        modifier = Modifier.fillMaxSize().padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Spacer(Modifier.weight(1f))
-        Text(
-            "ALIAS",
-            style = TextStyle(
-                brush = Brush.linearGradient(listOf(Accent2, Accent)),
-                fontSize = 72.sp,
-                fontWeight = FontWeight.Black,
-                letterSpacing = 6.sp,
-            ),
+    Box(Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier.fillMaxSize().padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Spacer(Modifier.weight(1f))
+            Text(
+                "ALIAS",
+                style = TextStyle(
+                    brush = Brush.linearGradient(listOf(Accent2, Accent)),
+                    fontSize = 72.sp,
+                    fontWeight = FontWeight.Black,
+                    letterSpacing = 6.sp,
+                ),
+            )
+            Text(
+                "Объясняй слова, не называя их",
+                color = TextMuted,
+                fontSize = 16.sp,
+                textAlign = TextAlign.Center,
+            )
+            Spacer(Modifier.weight(1f))
+            if (saved != null) {
+                ContinueCard(saved) { vm.continueGame() }
+                Spacer(Modifier.height(12.dp))
+                GhostButton("Новая игра") { vm.go(Screen.CATEGORY) }
+            } else {
+                BigButton("Играть") { vm.go(Screen.CATEGORY) }
+            }
+            Spacer(Modifier.height(12.dp))
+            GhostButton("✍️ Мои слова") { vm.go(Screen.MY_WORDS) }
+            Spacer(Modifier.height(12.dp))
+            GhostButton("Правила") { vm.go(Screen.RULES) }
+            Spacer(Modifier.height(12.dp))
+            GhostButton("Сбросить историю слов") { confirmReset = true }
+            Spacer(Modifier.height(20.dp))
+            Text("В словарях $total слов и выражений", color = TextMuted, fontSize = 13.sp)
+        }
+
+        ThemeToggle(
+            dark = vm.darkTheme,
+            modifier = Modifier.align(Alignment.TopStart).padding(12.dp),
         )
-        Text(
-            "Объясняй слова, не называя их",
-            color = TextMuted,
-            fontSize = 16.sp,
-            textAlign = TextAlign.Center,
-        )
-        Spacer(Modifier.weight(1f))
-        BigButton("Играть") { vm.go(Screen.CATEGORY) }
-        Spacer(Modifier.height(12.dp))
-        GhostButton("✍️ Мои слова") { vm.go(Screen.MY_WORDS) }
-        Spacer(Modifier.height(12.dp))
-        GhostButton("Правила") { vm.go(Screen.RULES) }
-        Spacer(Modifier.height(12.dp))
-        GhostButton("Сбросить историю слов") { confirmReset = true }
-        Spacer(Modifier.height(20.dp))
-        Text("В словарях $total слов и выражений", color = TextMuted, fontSize = 13.sp)
     }
 
     if (confirmReset) {
@@ -87,6 +102,59 @@ fun MenuScreen(vm: GameViewModel) {
             },
             onDismiss = { confirmReset = false },
         )
+    }
+}
+
+/** Карточка незаконченной игры: счёт, чей ход и кнопка «Продолжить». */
+@Composable
+private fun ContinueCard(info: SavedGameInfo, onContinue: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(22.dp))
+            .background(SurfaceC)
+            .padding(16.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                "Незаконченная игра",
+                color = TextMain,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.weight(1f),
+            )
+            Text(
+                "${info.category.emoji} раунд ${info.round}",
+                color = TextMuted,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.SemiBold,
+            )
+        }
+        Spacer(Modifier.height(10.dp))
+        val shown = info.teams.sortedByDescending { it.second }.take(3)
+        shown.forEach { (name, score) ->
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 3.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    name,
+                    color = if (name == info.nextTeam) Accent2 else TextMain,
+                    fontSize = 15.sp,
+                    fontWeight = if (name == info.nextTeam) FontWeight.Bold else FontWeight.Medium,
+                    maxLines = 1,
+                    modifier = Modifier.weight(1f),
+                )
+                Text("$score", color = TextMain, fontSize = 16.sp, fontWeight = FontWeight.Black)
+            }
+        }
+        if (info.teams.size > 3) {
+            Text("и ещё ${info.teams.size - 3}", color = TextMuted, fontSize = 13.sp)
+        }
+        Spacer(Modifier.height(4.dp))
+        Text("Ход команды «${info.nextTeam}» · до ${info.target} очков", color = TextMuted, fontSize = 13.sp)
+        Spacer(Modifier.height(12.dp))
+        BigButton("Продолжить", onClick = onContinue)
     }
 }
 
@@ -110,6 +178,7 @@ fun RulesScreen(vm: GameViewModel) {
             Rule("✏️", "После раунда можно поправить итоги, если кто-то случайно смахнул не туда.")
             Rule("🏆", "Побеждает команда, первой набравшая нужное число очков. Победитель определяется, когда все команды сделали одинаковое число ходов.")
             Rule("🔁", "Игра помнит выпавшие слова и не повторяет их, пока не покажет весь словарь.")
+            Rule("💾", "Незаконченная игра сохраняется после каждого раунда. Её можно продолжить из главного меню, даже если приложение закрыли.")
             Rule("✍️", "В разделе «Мои слова» можно добавить свои слова. Играть ими можно отдельно или подмешать в «Рулетку».")
             Spacer(Modifier.height(16.dp))
         }

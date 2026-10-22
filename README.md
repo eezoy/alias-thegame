@@ -79,6 +79,31 @@
       Пауза скрывает слово. Последние пять секунд тикают, конец раунда слышно, а экран не гаснет.
     </td>
   </tr>
+  <tr>
+    <td valign="top">
+      <h4>💾 Продолжить игру</h4>
+      Счёт сохраняется после каждого раунда. Закрыли приложение посреди игры — в меню появится «Продолжить» с текущим счётом и чьим ходом.
+    </td>
+    <td valign="top">
+      <h4>🌗 Светлая и тёмная тема</h4>
+      Месяц или солнце в углу меню. Новая тема разливается кругом прямо от кнопки, а выбор запоминается.
+    </td>
+  </tr>
+</table>
+
+<br>
+
+<table>
+  <tr>
+    <td align="center" valign="middle"><img src="docs/theme-switch.gif" width="230" alt="Смена темы"></td>
+    <td align="center" valign="middle"><img src="docs/screens/categories-light.png" width="230" alt="Категории в светлой теме"></td>
+    <td align="center" valign="middle"><img src="docs/screens/play-light.png" width="230" alt="Игра в светлой теме"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub><b>Смена темы</b></sub></td>
+    <td align="center"><sub><b>Светлая тема</b></sub></td>
+    <td align="center"><sub><b>Игра при дневном свете</b></sub></td>
+  </tr>
 </table>
 
 <br>
@@ -117,7 +142,7 @@
 
 <table>
   <tr>
-    <td align="center"><img src="docs/screens/menu.png" width="220" alt="Главное меню"><br><sub><b>Главное меню</b></sub></td>
+    <td align="center"><img src="docs/screens/menu.png" width="220" alt="Главное меню"><br><sub><b>Меню и незаконченная игра</b></sub></td>
     <td align="center"><img src="docs/screens/categories.png" width="220" alt="Выбор категории"><br><sub><b>Выбор категории</b></sub></td>
     <td align="center"><img src="docs/screens/setup.png" width="220" alt="Настройки игры"><br><sub><b>Команды и настройки</b></sub></td>
   </tr>
@@ -142,7 +167,7 @@
 3. Откройте его. Если Android спросит, разрешите установку из этого источника.
 
 > [!TIP]
-> Новые версии ставятся поверх старых. Ваши слова, настройки и история выпавших слов сохраняются. Если иконка на рабочем столе не обновилась, перезагрузите телефон.
+> Новые версии ставятся поверх старых. Ваши слова, настройки, тема, незаконченная игра и история выпавших слов сохраняются. Если иконка на рабочем столе не обновилась, перезагрузите телефон.
 
 <br>
 
@@ -180,7 +205,7 @@
     <td><b>Сборка</b></td><td>Gradle + GitHub Actions: каждый коммит в <code>main</code> собирает подписанный APK и публикует релиз</td>
   </tr>
   <tr>
-    <td><b>Данные</b></td><td>Словари — текстовые файлы в <code>assets</code>, свои слова и история — <code>SharedPreferences</code></td>
+    <td><b>Данные</b></td><td>Словари — текстовые файлы в <code>assets</code>; свои слова, история, тема и сохранённая игра — <code>SharedPreferences</code></td>
   </tr>
 </table>
 
@@ -195,7 +220,7 @@ alias-thegame/
 │   │   ├── MainActivity.kt
 │   │   ├── GameViewModel.kt   # логика игры, таймер, очки
 │   │   ├── Words.kt           # категории, словари, свои слова, колода
-│   │   └── ui/                # экраны на Compose
+│   │   └── ui/                # экраны на Compose, темы, смена темы
 │   └── res/                   # иконка, тема
 ├── docs/                      # картинки для README
 └── .github/workflows/build.yml

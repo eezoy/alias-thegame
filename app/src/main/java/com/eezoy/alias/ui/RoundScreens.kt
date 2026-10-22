@@ -103,7 +103,7 @@ fun ReadyScreen(vm: GameViewModel) {
     if (confirmExit) {
         ConfirmDialog(
             title = "Выйти в меню?",
-            text = "Счёт этой игры не сохранится.",
+            text = "Счёт сохранится: игру можно будет продолжить из главного меню.",
             confirm = "Выйти",
             onConfirm = {
                 confirmExit = false
